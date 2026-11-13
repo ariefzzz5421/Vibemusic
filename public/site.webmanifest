@@ -1,0 +1,12 @@
+{
+  "name": "Vibe Music",
+  "short_name": "Vibe",
+  "description": "Your music. Your room.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B0911",
+  "theme_color": "#0B0911",
+  "icons": [
+    { "src": "/vibe-mark.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
