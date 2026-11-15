@@ -7,6 +7,6 @@ import './ui/styles.css';
 import './ui/tokens.css';
 import './ui/experience.css';
 
-const isAppHost = window.location.hostname.startsWith('app.');
-document.title = isAppHost ? 'Vibe Player — Your listening room' : 'Vibe Music — Your music. Your room.';
-createRoot(document.getElementById('root')!).render(<React.StrictMode><><SplashScreen />{isAppHost ? <App /> : <LandingPage />}</></React.StrictMode>);
+const isPlayer = window.location.pathname.replace(/\/$/, '') === '/player';
+document.title = isPlayer ? 'Vibe Player — Your listening room' : 'Vibe Music — Your music. Your room.';
+createRoot(document.getElementById('root')!).render(<React.StrictMode><><SplashScreen />{isPlayer ? <App /> : <LandingPage />}</></React.StrictMode>);

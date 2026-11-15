@@ -1,11 +1,6 @@
 # Vibe Music
 
-A local music player for the audio files in `Music/`. On first start, the Node backend scans MP3, WAV, and OGG files recursively, records their metadata and paths in SQLite, and adds them to the default **My Music** playlist. Audio files stay in `Music/`; they are streamed by the backend and never copied into the database.
-
-## Requirements
-
-- Node.js 24 or newer (`node:sqlite` is built into Node)
-- npm
+Vibe Music is a static Vite music player. The landing page is `/`, and the player is `/player` on the same domain. Audio files ship as public Vercel assets; there is no runtime Node API or SQLite dependency.
 
 ## Run locally
 
@@ -14,28 +9,27 @@ npm.cmd install
 npm.cmd run dev
 ```
 
-Open `http://localhost:5173` for the landing page or `http://app.localhost:5173` for the player dashboard. The dev command starts both the Vite frontend and the SQLite API. The SQLite file is created at `data/music.sqlite` on first run.
+Open `http://127.0.0.1:5173/` or `http://127.0.0.1:5173/player`. To serve a production build locally, run `npm.cmd run build` followed by `npm.cmd start`.
 
-To build and run the production app locally:
+## Music catalog
+
+- Commit MP3, WAV, or OGG files under `public/Music/`. Nested folders and spaces in filenames are supported.
+- After adding or removing files, run `npm.cmd run catalog` to regenerate `src/data/catalog.json`.
+- The build runs that generator automatically before TypeScript and Vite, so a normal `npm run build` also refreshes the manifest.
+- Commit both the audio files and the generated manifest. Vercel serves the committed files at `/Music/...` after the next deployment.
+- The catalog does not scan arbitrary deployment folders at runtime. The **Catalog guide** in the player explains this repository update flow.
+
+Track title and artist are inferred from filenames: `Artist - Title.mp3` is split at the separator; otherwise the containing folder is used as the artist. Playlist membership, names, shuffle, repeat, and splash preferences are saved in this browser's local storage. They do not sync to another browser, device, or user. Clearing browser storage removes those playlists.
+
+## Build and deploy
 
 ```powershell
 npm.cmd run build
 npm.cmd start
 ```
 
-Then open `http://localhost:3001` for the landing page or `http://app.localhost:3001` for the player dashboard.
+Vercel uses `npm run build` and serves `dist/` as a static Vite app. `vercel.json` records those settings and routes `/player` to the app shell. The existing production domain is `https://vibe-music-git.vercel.app`.
 
-## Music and playlists
+## Repository size notes
 
-- Add audio files to `Music/` (subfolders are scanned too), then use **Scan Music folder** in the app. New files are added to **My Music** automatically.
-- Use **Add music** to import one MP3, WAV, or OGG file from your computer. It is copied to `Music/Imported/`, and its title and artist are saved in SQLite. Maximum file size: 100 MB.
-- Create playlists and add or remove tracks from them in the app. Playlist membership and names persist in SQLite.
-- The default playlist contains the whole local collection and cannot be renamed or deleted.
-- Rename or move a music file outside the app, then scan again. Existing database entries are retained so custom playlists remain stable; unavailable files show an error when played.
-- The database stores file paths and playlist metadata, not copies of the audio.
-
-## Notes
-
-- This is a local, single-user app. The API binds to `127.0.0.1` and has no public authentication layer.
-- SQLite is provided by Node's built-in `node:sqlite` module, so no external database service or native package install is needed.
-- Music folder metadata is inferred from filenames. Names containing `Artist - Title` are split; otherwise the parent folder is used as the artist when available.
+The checked-in audio catalog is about 193 MB across 51 files. The current files are all below 10 MB each. GitHub warns for files over 50 MiB and blocks individual files over 100 MiB. This repository uses ordinary Git files, not Git LFS; LFS would need a separate Vercel build/deployment setup and is not configured here. Vercel's documented 100 MB Hobby limit applies to source files uploaded through the CLI; this project is connected to Git, so that CLI upload limit is not the build path. Keep individual committed tracks below GitHub's hard limit and account for the full catalog in clone and deployment sizes.
