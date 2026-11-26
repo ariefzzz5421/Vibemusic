@@ -9,11 +9,81 @@ const initials = (s: string) => s.split(/\s+/).map(x => x[0]).join('').slice(0, 
 const shuffled = (items: string[]) => { const result = [...items]; for (let i = result.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [result[i], result[j]] = [result[j], result[i]]; } return result; };
 function Cover({ title, className = '', artworkUrl }: { title: string; className?: string; artworkUrl?: string | null }) { return <div className={`cover ${className}`}><div className="cover-fallback"><AudioLines size={24}/><span>{initials(title)}</span></div>{artworkUrl&&<img src={artworkUrl} alt="" aria-hidden="true" loading="lazy" decoding="async" onError={e=>e.currentTarget.remove()}/>}</div>; }
 
+const LS_PL_KEY = 'vibe_static_playlists_v1';
+function getLocalPlaylists(fallback: Playlist[]): Playlist[] {
+  try {
+    const raw = localStorage.getItem(LS_PL_KEY);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch { return fallback; }
+}
+function saveLocalPlaylists(pls: Playlist[]) {
+  try { localStorage.setItem(LS_PL_KEY, JSON.stringify(pls)); } catch {}
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(path, { ...init, headers: { 'content-type': 'application/json', ...init?.headers } });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error || `Request failed (${response.status})`);
-  return data as T;
+  const method = (init?.method || 'GET').toUpperCase();
+  try {
+    const response = await fetch(path, { ...init, headers: { 'content-type': 'application/json', ...init?.headers } });
+    const ct = response.headers.get('content-type') || '';
+    if (!ct.includes('application/json')) throw new Error('STATIC_FALLBACK');
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || `Request failed (${response.status})`);
+    return data as T;
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg !== 'STATIC_FALLBACK' && !msg.includes('JSON')) throw err;
+    if (path === '/api/tracks' && method === 'GET') {
+      const r = await fetch('/static-tracks.json');
+      return (await r.json()) as T;
+    }
+    if (path === '/api/playlists' && method === 'GET') {
+      const r = await fetch('/static-playlists.json');
+      const base = (await r.json()) as Playlist[];
+      const saved = getLocalPlaylists(base);
+      saveLocalPlaylists(saved);
+      return saved as T;
+    }
+    if (path === '/api/playlists' && method === 'POST') {
+      const body = JSON.parse(String(init?.body || '{}'));
+      const pls = getLocalPlaylists([]);
+      const created: Playlist = { id: 'pl_' + Date.now(), name: body.name || 'Playlist', created_at: new Date().toISOString(), is_default: 0, track_ids: [] };
+      pls.push(created); saveLocalPlaylists(pls);
+      return created as T;
+    }
+    if (path.startsWith('/api/playlists/') && path.includes('/tracks/')) {
+      const parts = path.split('/');
+      const plId = decodeURIComponent(parts[3]);
+      const trId = decodeURIComponent(parts[5]);
+      const pls = getLocalPlaylists([]);
+      const targetPl = pls.find(p => p.id === plId);
+      if (targetPl) {
+        if (method === 'PUT' && !targetPl.track_ids.includes(trId)) targetPl.track_ids.push(trId);
+        if (method === 'DELETE') targetPl.track_ids = targetPl.track_ids.filter(id => id !== trId);
+        saveLocalPlaylists(pls);
+      }
+      return { ok: true } as T;
+    }
+    if (path.startsWith('/api/playlists/') && method === 'PATCH') {
+      const plId = decodeURIComponent(path.split('/')[3]);
+      const body = JSON.parse(String(init?.body || '{}'));
+      const pls = getLocalPlaylists([]);
+      const targetPl = pls.find(p => p.id === plId);
+      if (targetPl && body.name) { targetPl.name = body.name; saveLocalPlaylists(pls); }
+      return { ok: true } as T;
+    }
+    if (path.startsWith('/api/playlists/') && method === 'DELETE') {
+      const plId = decodeURIComponent(path.split('/')[3]);
+      const pls = getLocalPlaylists([]).filter(p => p.id !== plId || p.is_default === 1);
+      saveLocalPlaylists(pls);
+      return { ok: true } as T;
+    }
+    if (path === '/api/scan') {
+      const r = await fetch('/static-tracks.json');
+      const list = await r.json();
+      return { scanned: list.length } as T;
+    }
+    throw new Error('Mode preview Vercel: fitur upload lagu baru hanya aktif di server lokal.');
+  }
 }
 
 export default function App() {
