@@ -5,3 +5,8 @@ dist
 .npm-cache
 data/
 .aider*
+
+public/static-audio/
+public/static-artwork/
+public/static-tracks.json
+public/static-playlists.json
