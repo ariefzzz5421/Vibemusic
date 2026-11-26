@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-13",
+  "framework": "React 19 + Vite 6",
+  "fonts": ["Space Grotesk", "DM Sans"],
+  "existingPalette": "charcoal, violet, and green",
+  "motion": "CSS transitions and reduced-motion support",
+  "macrostructure": "Marquee Hero",
+  "theme": "Midnight-inspired dark plum and violet with a warm coral signal",
+  "preserve": ["local SQLite library", "playlists", "audio playback", "responsive dashboard"],
+  "referenceUrls": [
+    "https://dribbble.com/shots/27600630-Music-Player-Landing-Page",
+    "https://dribbble.com/shots/27560068-music-generation-dashboard-ai"
+  ]
+}

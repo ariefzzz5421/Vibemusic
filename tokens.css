@@ -1,0 +1,69 @@
+/* Hallmark · macrostructure: Index-First · tone: atmospheric · anchor hue: pear green */
+:root {
+  color-scheme: dark;
+  --color-paper: oklch(14% 0.018 136);
+  --color-paper-raised: oklch(17% 0.02 136);
+  --color-surface: oklch(20% 0.023 136);
+  --color-surface-raised: oklch(24% 0.027 136);
+  --color-surface-active: oklch(28% 0.034 136);
+  --color-ink: oklch(94% 0.014 105);
+  --color-muted: oklch(72% 0.022 125);
+  --color-faint: oklch(58% 0.021 130);
+  --color-rule: oklch(34% 0.026 136);
+  --color-rule-soft: oklch(27% 0.022 136);
+  --color-accent: oklch(86% 0.18 132);
+  --color-accent-strong: oklch(70% 0.16 132);
+  --color-accent-ink: oklch(17% 0.025 136);
+  --color-signal: oklch(77% 0.14 35);
+  --color-signal-soft: oklch(30% 0.045 35);
+  --color-success: oklch(84% 0.14 135);
+  --color-focus: oklch(91% 0.12 130);
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-display: clamp(2rem, 3vw, 2.75rem);
+
+  --radius-small: 0.5rem;
+  --radius-medium: 1rem;
+  --radius-large: 1.5rem;
+  --radius-pill: 999px;
+
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 160ms;
+  --duration-normal: 260ms;
+
+  --bg: var(--color-paper);
+  --panel: var(--color-paper-raised);
+  --panel2: var(--color-surface);
+  --line: var(--color-rule-soft);
+  --muted: var(--color-muted);
+  --white: var(--color-ink);
+  --green: var(--color-accent);
+  --orange: var(--color-signal);
+  --purple: var(--color-accent-strong);
+  --display: var(--font-display);
+
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: var(--color-paper);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}

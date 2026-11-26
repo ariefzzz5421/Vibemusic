@@ -7,10 +7,9 @@
     "node": ">=24.0.0"
   },
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
-    "start": "vite preview --host 127.0.0.1",
-    "catalog": "node scripts/generate-catalog.mjs",
-    "build": "npm run catalog && tsc -b && vite build",
+    "dev": "node scripts/dev.mjs",
+    "start": "node scripts/server.mjs",
+    "build": "tsc -b && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
